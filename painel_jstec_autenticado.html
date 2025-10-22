@@ -261,7 +261,7 @@
           statusEl.textContent = "Enviando...";
           statusEl.className = "status";
 
-          fetch("http://localhost:5000/upload", {
+          fetch("https://painel-jstec-backend-capao.onrender.com/upload", {
             method: "POST",
             body: formData,
           })
@@ -292,4 +292,4 @@
     </script>
   </body>
 </html>
-``
+'
