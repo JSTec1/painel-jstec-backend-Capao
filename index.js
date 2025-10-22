@@ -4,6 +4,7 @@ const cloudinary = require("cloudinary").v2;
 const streamifier = require("streamifier");
 const cors = require("cors");
 
+// Configuração do Cloudinary
 cloudinary.config({
   cloud_name: process.env.CLOUD_NAME,
   api_key: process.env.CLOUD_API_KEY,
@@ -33,6 +34,7 @@ app.post("/upload", upload.single("image"), async (req, res) => {
     };
 
     const result = await streamUpload(req.file.buffer);
+    console.log("Upload concluído:", result.secure_url);
     res.json({ url: result.secure_url });
   } catch (err) {
     console.error("Erro no upload:", err);
@@ -40,5 +42,8 @@ app.post("/upload", upload.single("image"), async (req, res) => {
   }
 });
 
+// Porta padrão do Render ou 5000 localmente
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, "0.0.0.0", () => console.log(`Servidor rodando na porta ${PORT}`));
+app.listen(PORT, "0.0.0.0", () => {
+  console.log(`Servidor rodando na porta ${PORT}`);
+});
