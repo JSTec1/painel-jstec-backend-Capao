@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: painel-jstec-backend-Capao
+    env: python
+    buildCommand: ""
+    startCommand: ./start.sh
+    envVars:
+      - key: GITHUB_TOKEN
+        value: seu_token_aqui
+    autoDeploy: true
