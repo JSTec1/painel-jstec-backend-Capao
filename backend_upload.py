@@ -9,7 +9,9 @@ import time
 
 app = Flask(__name__)
 CORS(app)
-
+@app.route('/')
+def home():
+    return 'Painel JSTec Backend está rodando com sucesso!'
 # Configuração do Cloudinary
 cloudinary.config(
     cloud_name='denouonoc',
