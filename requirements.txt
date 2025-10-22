@@ -1,7 +1,0 @@
-flask
-flask-cors
-cloudinary
-requests
-python-dotenv
-gunicorn
-
