@@ -6,13 +6,16 @@ const cors = require("cors");
 
 // Configuração do Cloudinary usando variáveis de ambiente
 cloudinary.config({
-  cloud_name: process.env.CLOUD_NAME,
-  api_key: process.env.CLOUD_API_KEY,
-  api_secret: process.env.CLOUD_API_SECRET,
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
 const app = express();
-
+console.log("🔍 Verificando variáveis de ambiente:");
+console.log("CLOUDINARY_CLOUD_NAME:", process.env.CLOUDINARY_CLOUD_NAME);
+console.log("CLOUDINARY_API_KEY:", process.env.CLOUDINARY_API_KEY);
+console.log("CLOUDINARY_API_SECRET:", process.env.CLOUDINARY_API_SECRET);
 // CORS para permitir requisições do GitHub Pages
 app.use(cors({ origin: "https://jstec1.github.io" }));
 
@@ -54,3 +57,4 @@ const PORT = process.env.PORT || 5000;
 app.listen(PORT, "0.0.0.0", () =>
   console.log(`Servidor rodando na porta ${PORT}`)
 );
+
