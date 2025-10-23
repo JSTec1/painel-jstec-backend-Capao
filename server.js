@@ -29,7 +29,12 @@ app.post("/upload", upload.single("image"), async (req, res) => {
     const streamUpload = (fileBuffer) => {
       return new Promise((resolve, reject) => {
         const stream = cloudinary.uploader.upload_stream(
-          { folder: "denouonoc/grade" },
+         {
+  public_id: "denouonoc/grade/NFT",
+  overwrite: true,
+  resource_type: "image"
+}
+``
           (err, result) => {
             if (err) return reject(err);
             resolve(result);
@@ -57,4 +62,5 @@ const PORT = process.env.PORT || 5000;
 app.listen(PORT, "0.0.0.0", () =>
   console.log(`Servidor rodando na porta ${PORT}`)
 );
+
 
