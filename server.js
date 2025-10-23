@@ -16,6 +16,7 @@ console.log("🔍 Verificando variáveis de ambiente:");
 console.log("CLOUDINARY_CLOUD_NAME:", process.env.CLOUDINARY_CLOUD_NAME);
 console.log("CLOUDINARY_API_KEY:", process.env.CLOUDINARY_API_KEY);
 console.log("CLOUDINARY_API_SECRET:", process.env.CLOUDINARY_API_SECRET);
+
 // CORS para permitir requisições do GitHub Pages
 app.use(cors({ origin: "https://jstec1.github.io" }));
 
@@ -29,12 +30,11 @@ app.post("/upload", upload.single("image"), async (req, res) => {
     const streamUpload = (fileBuffer) => {
       return new Promise((resolve, reject) => {
         const stream = cloudinary.uploader.upload_stream(
-         {
-  public_id: "denouonoc/grade/NFT",
-  overwrite: true,
-  resource_type: "image"
-}
-``
+          {
+            public_id: "denouonoc/grade/NFT",
+            overwrite: true,
+            resource_type: "image"
+          },
           (err, result) => {
             if (err) return reject(err);
             resolve(result);
@@ -60,7 +60,5 @@ app.use((err, req, res, next) => {
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, "0.0.0.0", () =>
-  console.log(`Servidor rodando na porta ${PORT}`)
+  console.log(`🚀 Servidor rodando na porta ${PORT}`)
 );
-
-
