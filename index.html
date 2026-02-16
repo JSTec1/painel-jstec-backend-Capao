@@ -70,14 +70,16 @@
         border-radius: 16px;
         overflow: hidden;
         min-height: 300px;
-        transition: border-color 0.2s ease, background 0.2s ease;
+        transition: border-color 0.2s ease, background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
         cursor: pointer;
         position: relative;
       }
 
       .preview.drag-over {
         border-color: var(--green-neon);
-        background: rgba(0, 230, 118, 0.06);
+        background: rgba(0, 230, 118, 0.12);
+        transform: scale(1.02);
+        box-shadow: 0 0 28px rgba(0, 230, 118, 0.25), 0 0 0 2px rgba(0, 230, 118, 0.15);
       }
 
       .preview.has-image {
@@ -310,9 +312,9 @@
   <body>
     <div class="painel">
       <!-- Loading overlay: só aparece durante o upload -->
-      <div class="loading-overlay" id="loadingOverlay" aria-hidden="true">
-        <div class="spinner" aria-label="Carregando"></div>
-        <p>Processando imagem...</p>
+      <div class="loading-overlay" id="loadingOverlay" aria-hidden="true" role="status" aria-live="polite">
+        <div class="spinner" aria-hidden="true"></div>
+        <p id="loadingMessage">Processando imagem...</p>
       </div>
 
       <div class="preview" id="preview">
@@ -440,11 +442,19 @@
           setPreviewFromFile(file);
         });
 
+        const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
+
         form.addEventListener("submit", (e) => {
           e.preventDefault();
           const file = fileInput.files[0];
           if (!file) {
             statusEl.textContent = "Selecione uma imagem antes de enviar.";
+            statusEl.className = "status error";
+            return;
+          }
+
+          if (file.size > MAX_FILE_SIZE) {
+            statusEl.textContent = "Arquivo muito grande (Máx: 10MB). Por favor, escolha uma imagem mais leve.";
             statusEl.className = "status error";
             return;
           }
