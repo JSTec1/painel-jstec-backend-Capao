@@ -4,55 +4,112 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Painel JSTec</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
     <style>
+      :root {
+        --bg-dark: #0f1720;
+        --bg-card: rgba(28, 31, 38, 0.65);
+        --glass-border: rgba(255, 255, 255, 0.08);
+        --green-neon: #00e676;
+        --green-dark: #00c853;
+        --green-glow: rgba(0, 230, 118, 0.35);
+        --text-muted: #94a3b8;
+        --text-bright: #f1f5f9;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
       body {
         margin: 0;
         padding: 0;
-        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-        background: linear-gradient(135deg, #0f1720, #111827);
-        color: #fff;
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+        background: linear-gradient(135deg, #0f1720 0%, #111827 50%, #0f1720 100%);
+        color: var(--text-bright);
         min-height: 100vh;
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: flex-start;
-        padding-top: 40px;
+        padding: 24px 16px 40px;
       }
 
       .painel {
-        background-color: #1c1f26;
-        border-radius: 16px;
-        box-shadow: 0 0 25px rgba(0, 0, 0, 0.6);
-        padding: 20px;
-        width: 95%;
+        background: var(--bg-card);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        border-radius: 24px;
+        box-shadow:
+          0 8px 32px rgba(0, 0, 0, 0.4),
+          0 0 0 1px rgba(255, 255, 255, 0.03) inset;
+        padding: 28px;
+        width: 100%;
         max-width: 800px;
         display: flex;
         justify-content: space-between;
-        align-items: center;
+        align-items: stretch;
         flex-wrap: wrap;
+        gap: 24px;
+        position: relative;
       }
 
       .preview {
-        flex: 1 1 60%;
+        flex: 1 1 58%;
         display: flex;
         justify-content: center;
         align-items: center;
-        background-color: #111418;
-        border-radius: 12px;
+        background: rgba(17, 20, 24, 0.6);
+        border: 2px dashed rgba(148, 163, 184, 0.25);
+        border-radius: 16px;
         overflow: hidden;
         min-height: 300px;
+        transition: border-color 0.2s ease, background 0.2s ease;
+        cursor: pointer;
+        position: relative;
+      }
+
+      .preview.drag-over {
+        border-color: var(--green-neon);
+        background: rgba(0, 230, 118, 0.06);
+      }
+
+      .preview.has-image {
+        border-style: solid;
+        border-color: var(--glass-border);
+        cursor: default;
       }
 
       .preview img {
         max-width: 100%;
-        max-height: 400px;
-        object-fit: cover;
+        max-height: 380px;
+        object-fit: contain;
         display: block;
       }
 
       .placeholder {
-        color: #999;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        color: var(--text-muted);
         font-size: 14px;
+        font-weight: 500;
+        padding: 24px;
+        text-align: center;
+      }
+
+      .placeholder-icon {
+        width: 56px;
+        height: 56px;
+        opacity: 0.7;
       }
 
       .side {
@@ -62,92 +119,202 @@
         align-items: center;
         justify-content: center;
         text-align: center;
-        gap: 15px;
+        gap: 20px;
       }
 
       .logo {
-        font-size: 42px;
-        font-weight: bold;
-        letter-spacing: 2px;
-        background: linear-gradient(90deg, #66ffa6, #00b86b);
+        font-family: "Inter", sans-serif;
+        font-size: 2.5rem;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        background: linear-gradient(135deg, #66ffa6 0%, #00e676 50%, #00b86b 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
-        text-shadow: none;
-        margin-bottom: 10px;
+        background-clip: text;
+        margin-bottom: 4px;
       }
 
       form {
         display: flex;
         flex-direction: column;
-        gap: 12px;
+        gap: 14px;
         width: 100%;
         align-items: center;
       }
 
       .upload-btn {
-        background: linear-gradient(90deg, #00c853, #00e676);
-        color: #062014;
+        font-family: "Inter", sans-serif;
+        background: linear-gradient(135deg, #00c853 0%, #00e676 100%);
+        color: #031a0d;
         border: none;
-        padding: 12px 26px;
-        border-radius: 10px;
+        padding: 14px 28px;
+        border-radius: 12px;
         font-size: 15px;
         font-weight: 600;
         cursor: pointer;
-        transition: transform 0.15s ease, opacity 0.2s ease;
-        box-shadow: 0 4px 20px rgba(0, 255, 128, 0.25);
+        transition: transform 0.15s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+        box-shadow: 0 4px 20px rgba(0, 230, 118, 0.25);
+        width: 100%;
+        max-width: 260px;
       }
 
       .upload-btn:hover {
-        opacity: 0.9;
-        transform: scale(1.02);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 28px var(--green-glow);
+        opacity: 1;
+      }
+
+      .upload-btn:active {
+        transform: translateY(0);
+        box-shadow: 0 2px 12px rgba(0, 230, 118, 0.3);
+      }
+
+      .upload-btn.select-btn {
+        background: linear-gradient(135deg, rgba(0, 200, 83, 0.2) 0%, rgba(0, 230, 118, 0.15) 100%);
+        color: var(--green-neon);
+        border: 1px solid rgba(0, 230, 118, 0.4);
+      }
+
+      .upload-btn.select-btn:hover {
+        background: linear-gradient(135deg, rgba(0, 200, 83, 0.3) 0%, rgba(0, 230, 118, 0.25) 100%);
+        box-shadow: 0 4px 20px rgba(0, 230, 118, 0.2);
       }
 
       .progress-container {
         width: 100%;
-        background-color: rgba(255, 255, 255, 0.1);
-        border-radius: 8px;
+        max-width: 260px;
+        background: rgba(255, 255, 255, 0.06);
+        border-radius: 10px;
         overflow: hidden;
-        height: 10px;
+        height: 6px;
         display: none;
       }
 
       .progress-bar {
-        height: 10px;
+        height: 100%;
         width: 0;
-        background: linear-gradient(90deg, #80ffcc, #00c853);
-        border-radius: 8px;
-        transition: width 0.2s ease;
+        background: linear-gradient(90deg, #00c853, #66ffa6);
+        border-radius: 10px;
+        transition: width 0.3s ease;
       }
 
       .status {
-        margin-top: 10px;
-        font-size: 14px;
+        margin-top: 4px;
+        font-size: 13px;
         min-height: 20px;
+        font-weight: 500;
       }
 
       .success {
         color: #8ef7c9;
       }
       .error {
-        color: #ffb3b3;
+        color: #fca5a5;
+      }
+
+      /* Loading overlay */
+      .loading-overlay {
+        position: absolute;
+        inset: 0;
+        background: rgba(15, 23, 32, 0.85);
+        backdrop-filter: blur(8px);
+        border-radius: 24px;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 10;
+      }
+
+      .loading-overlay.visible {
+        display: flex;
+      }
+
+      .spinner {
+        width: 48px;
+        height: 48px;
+        border: 3px solid rgba(0, 230, 118, 0.2);
+        border-top-color: var(--green-neon);
+        border-radius: 50%;
+        animation: spin 0.9s linear infinite;
+      }
+
+      .loading-overlay p {
+        position: absolute;
+        bottom: 80px;
+        font-size: 14px;
+        color: var(--text-muted);
+        font-weight: 500;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      /* Footer info (10 MB) */
+      .card-footer {
+        width: 100%;
+        flex-basis: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding-top: 16px;
+        margin-top: 8px;
+        border-top: 1px solid var(--glass-border);
+      }
+
+      .card-footer .info-icon {
+        width: 18px;
+        height: 18px;
+        flex-shrink: 0;
+        opacity: 0.8;
+      }
+
+      .card-footer span {
+        font-size: 12px;
+        color: var(--text-muted);
+        font-weight: 500;
       }
 
       @media (max-width: 768px) {
+        body {
+          padding-top: 16px;
+        }
         .painel {
           flex-direction: column;
+          padding: 20px;
+          border-radius: 20px;
         }
-        .preview,
+        .preview {
+          flex: 1 1 100%;
+          min-height: 260px;
+        }
         .side {
           flex: 1 1 100%;
         }
         .logo {
-          margin-top: 15px;
+          font-size: 2rem;
+          margin-top: 0;
+        }
+        .upload-btn {
+          max-width: 100%;
+        }
+        .progress-container {
+          max-width: 100%;
         }
       }
     </style>
   </head>
   <body>
     <div class="painel">
+      <!-- Loading overlay: só aparece durante o upload -->
+      <div class="loading-overlay" id="loadingOverlay" aria-hidden="true">
+        <div class="spinner" aria-label="Carregando"></div>
+        <p>Processando imagem...</p>
+      </div>
+
       <div class="preview" id="preview">
         <img
           id="currentImg"
@@ -156,7 +323,12 @@
           onerror="showPlaceholder()"
         />
         <div id="placeholder" class="placeholder" style="display: none">
-          Nenhuma imagem enviada ainda.
+          <svg class="placeholder-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+            <polyline points="17 8 12 3 7 8" />
+            <line x1="12" y1="3" x2="12" y2="15" />
+          </svg>
+          <span>Arraste uma imagem aqui ou clique para selecionar</span>
         </div>
       </div>
 
@@ -169,7 +341,7 @@
             accept="image/*"
             style="display: none"
           />
-          <button type="button" class="upload-btn" id="selectBtn">
+          <button type="button" class="upload-btn select-btn" id="selectBtn">
             Selecionar imagem
           </button>
           <button type="submit" class="upload-btn">Enviar nova imagem</button>
@@ -179,27 +351,15 @@
         </div>
         <div class="status" id="status"></div>
       </div>
-    </div>
 
-    <!-- ⚠️ AVISO INSERIDO AQUI ABAIXO DA DIV .painel -->
-    <div
-      style="
-        background-color: #e0f7fa;
-        color: #006064;
-        padding: 10px;
-        border-radius: 5px;
-        margin-top: 20px;
-        border: 1px solid #b2ebf2;
-        font-family: sans-serif;
-        font-size: 14px;
-        max-width: 800px;
-        width: 95%;
-      "
-    >
-      ⚠️ <strong>Atenção:</strong> As imagens enviadas devem ter no máximo
-      <strong>10 MB</strong>.<br />
-      Para evitar erros, recomendamos utilizar formatos mais leves como
-      <code></code><code>.JPG</code> em vez de <code>.PNG</code>.
+      <div class="card-footer">
+        <svg class="info-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10" />
+          <line x1="12" y1="16" x2="12" y2="12" />
+          <line x1="12" y1="8" x2="12.01" y2="8" />
+        </svg>
+        <span>Máx. 10 MB. Recomendado: JPG para melhor desempenho.</span>
+      </div>
     </div>
 
     <script>
@@ -217,32 +377,68 @@
         const statusEl = document.getElementById("status");
         const currentImg = document.getElementById("currentImg");
         const placeholder = document.getElementById("placeholder");
-
-        selectBtn.addEventListener("click", () => {
-          fileInput.click();
-        });
-
-        fileInput.addEventListener("change", () => {
-          const file = fileInput.files[0];
-          if (file) {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-              currentImg.src = e.target.result;
-              hidePlaceholder();
-            };
-            reader.readAsDataURL(file);
-          }
-        });
+        const previewEl = document.getElementById("preview");
+        const loadingOverlay = document.getElementById("loadingOverlay");
 
         function showPlaceholder() {
           currentImg.style.display = "none";
-          placeholder.style.display = "block";
+          placeholder.style.display = "flex";
+          previewEl.classList.remove("has-image");
         }
 
         function hidePlaceholder() {
           placeholder.style.display = "none";
           currentImg.style.display = "block";
+          previewEl.classList.add("has-image");
         }
+
+        function setPreviewFromFile(file) {
+          if (!file || !file.type.startsWith("image/")) return;
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            currentImg.src = e.target.result;
+            hidePlaceholder();
+          };
+          reader.readAsDataURL(file);
+        }
+
+        selectBtn.addEventListener("click", () => {
+          fileInput.click();
+        });
+
+        previewEl.addEventListener("click", (e) => {
+          if (placeholder.style.display !== "none") {
+            fileInput.click();
+          }
+        });
+
+        fileInput.addEventListener("change", () => {
+          const file = fileInput.files[0];
+          if (file) setPreviewFromFile(file);
+        });
+
+        // Drag and drop
+        previewEl.addEventListener("dragover", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          previewEl.classList.add("drag-over");
+        });
+        previewEl.addEventListener("dragleave", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          previewEl.classList.remove("drag-over");
+        });
+        previewEl.addEventListener("drop", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          previewEl.classList.remove("drag-over");
+          const file = e.dataTransfer.files[0];
+          if (!file || !file.type.startsWith("image/")) return;
+          const dt = new DataTransfer();
+          dt.items.add(file);
+          fileInput.files = dt.files;
+          setPreviewFromFile(file);
+        });
 
         form.addEventListener("submit", (e) => {
           e.preventDefault();
@@ -258,8 +454,10 @@
 
           progressContainer.style.display = "block";
           progressBar.style.width = "0";
-          statusEl.textContent = "Enviando...";
+          statusEl.textContent = "";
           statusEl.className = "status";
+          loadingOverlay.classList.add("visible");
+          loadingOverlay.setAttribute("aria-hidden", "false");
 
           fetch("https://painel-jstec-backend-capao.onrender.com/upload", {
             method: "POST",
@@ -267,20 +465,24 @@
           })
             .then((response) => response.json())
             .then((data) => {
+              progressBar.style.width = "100%";
               if (data.url) {
-                progressBar.style.width = "100%";
                 currentImg.src = data.url + "?v=" + Date.now();
                 hidePlaceholder();
-                statusEl.textContent = "✅ Imagem enviada com sucesso!";
+                statusEl.textContent = "Imagem enviada com sucesso!";
                 statusEl.className = "status success";
               } else {
-                statusEl.textContent = "Erro: " + data.error;
+                statusEl.textContent = "Erro: " + (data.error || "Resposta inválida");
                 statusEl.className = "status error";
               }
             })
             .catch(() => {
               statusEl.textContent = "Erro de conexão com o servidor.";
               statusEl.className = "status error";
+            })
+            .finally(() => {
+              loadingOverlay.classList.remove("visible");
+              loadingOverlay.setAttribute("aria-hidden", "true");
             });
         });
 
@@ -292,4 +494,3 @@
     </script>
   </body>
 </html>
-``
