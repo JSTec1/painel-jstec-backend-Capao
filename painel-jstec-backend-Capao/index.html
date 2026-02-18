@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Painel JSTec</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg-dark: #0f1720;
+        --bg-card: rgba(28, 31, 38, 0.65);
+        --glass-border: rgba(255, 255, 255, 0.08);
+        --green-neon: #00e676;
+        --green-dark: #00c853;
+        --green-glow: rgba(0, 230, 118, 0.35);
+        --text-muted: #94a3b8;
+        --text-bright: #f1f5f9;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+        background: #0f1720;
+        color: var(--text-bright);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        padding: 24px 16px 40px;
+        position: relative;
+      }
+
+      /* Fundo tech: grade + watermark JSTec pequeno + ícones */
+      .bg-tech {
+        position: fixed;
+        inset: 0;
+        z-index: -1;
+        pointer-events: none;
+        overflow: hidden;
+        background: linear-gradient(135deg, #0f1720 0%, #111827 50%, #0f1720 100%);
+      }
+      .bg-tech::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background-image:
+          linear-gradient(rgba(148, 163, 184, 0.04) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(148, 163, 184, 0.04) 1px, transparent 1px);
+        background-size: 32px 32px;
+      }
+      .bg-watermark {
+        position: absolute;
+        font-family: "Inter", sans-serif;
+        font-size: 0.65rem;
+        font-weight: 600;
+        letter-spacing: 0.15em;
+        color: rgba(148, 163, 184, 0.08);
+        white-space: nowrap;
+      }
+      .bg-watermark:nth-of-type(1) { top: 12%; left: 8%; }
+      .bg-watermark:nth-of-type(2) { bottom: 18%; right: 10%; }
+      .bg-watermark:nth-of-type(3) { top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-12deg); }
+      .bg-icons {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        opacity: 0.12;
+      }
+      .bg-icons svg {
+        position: absolute;
+        width: 20px;
+        height: 20px;
+        stroke: #94a3b8;
+        fill: none;
+        stroke-width: 1.5;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+      .bg-icons .icon-1 { top: 15%; right: 15%; }
+      .bg-icons .icon-2 { bottom: 25%; left: 12%; }
+      .bg-icons .icon-3 { top: 30%; left: 20%; }
+      .bg-icons .icon-4 { bottom: 15%; right: 22%; }
+      .bg-icons .icon-5 { top: 70%; left: 8%; }
+      .bg-icons .icon-6 { top: 22%; right: 35%; }
+      .bg-icons .icon-7 { bottom: 35%; right: 8%; }
+      .bg-icons .icon-8 { top: 55%; right: 18%; }
+
+      .painel {
+        background: var(--bg-card);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        border-radius: 24px;
+        box-shadow:
+          0 8px 32px rgba(0, 0, 0, 0.4),
+          0 0 0 1px rgba(255, 255, 255, 0.03) inset;
+        padding: 28px;
+        width: 100%;
+        max-width: 800px;
+        display: flex;
+        justify-content: space-between;
+        align-items: stretch;
+        flex-wrap: wrap;
+        gap: 24px;
+        position: relative;
+      }
+
+      .preview {
+        flex: 1 1 58%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: rgba(17, 20, 24, 0.6);
+        border: 2px dashed rgba(148, 163, 184, 0.25);
+        border-radius: 16px;
+        overflow: hidden;
+        min-height: 300px;
+        transition: border-color 0.2s ease, background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+        cursor: pointer;
+        position: relative;
+      }
+
+      .preview.drag-over {
+        border-color: var(--green-neon);
+        background: rgba(0, 230, 118, 0.12);
+        transform: scale(1.02);
+        box-shadow: 0 0 28px rgba(0, 230, 118, 0.25), 0 0 0 2px rgba(0, 230, 118, 0.15);
+      }
+
+      .preview.has-image {
+        border-style: solid;
+        border-color: var(--glass-border);
+        cursor: default;
+      }
+
+      .preview img {
+        max-width: 100%;
+        max-height: 380px;
+        object-fit: contain;
+        display: block;
+      }
+
+      .placeholder {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        color: var(--text-muted);
+        font-size: 14px;
+        font-weight: 500;
+        padding: 24px;
+        text-align: center;
+      }
+
+      .placeholder-icon {
+        width: 56px;
+        height: 56px;
+        opacity: 0.7;
+      }
+
+      .side {
+        flex: 1 1 35%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        gap: 20px;
+      }
+
+      .logo {
+        font-family: "Inter", sans-serif;
+        font-size: 2.5rem;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        background: linear-gradient(135deg, #66ffa6 0%, #00e676 50%, #00b86b 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 4px;
+      }
+
+      form {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+        width: 100%;
+        align-items: center;
+      }
+
+      .upload-btn {
+        font-family: "Inter", sans-serif;
+        background: linear-gradient(135deg, #00c853 0%, #00e676 100%);
+        color: #031a0d;
+        border: none;
+        padding: 14px 28px;
+        border-radius: 12px;
+        font-size: 15px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: transform 0.15s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+        box-shadow: 0 4px 20px rgba(0, 230, 118, 0.25);
+        width: 100%;
+        max-width: 260px;
+      }
+
+      .upload-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 28px var(--green-glow);
+        opacity: 1;
+      }
+
+      .upload-btn:active {
+        transform: translateY(0);
+        box-shadow: 0 2px 12px rgba(0, 230, 118, 0.3);
+      }
+
+      .upload-btn.select-btn {
+        background: linear-gradient(135deg, rgba(0, 200, 83, 0.2) 0%, rgba(0, 230, 118, 0.15) 100%);
+        color: var(--green-neon);
+        border: 1px solid rgba(0, 230, 118, 0.4);
+      }
+
+      .upload-btn.select-btn:hover {
+        background: linear-gradient(135deg, rgba(0, 200, 83, 0.3) 0%, rgba(0, 230, 118, 0.25) 100%);
+        box-shadow: 0 4px 20px rgba(0, 230, 118, 0.2);
+      }
+
+      .progress-container {
+        width: 100%;
+        max-width: 260px;
+        background: rgba(255, 255, 255, 0.06);
+        border-radius: 10px;
+        overflow: hidden;
+        height: 6px;
+        display: none;
+      }
+
+      .progress-bar {
+        height: 100%;
+        width: 0;
+        background: linear-gradient(90deg, #00c853, #66ffa6);
+        border-radius: 10px;
+        transition: width 0.3s ease;
+      }
+
+      .status {
+        margin-top: 4px;
+        font-size: 13px;
+        min-height: 20px;
+        font-weight: 500;
+      }
+
+      .success {
+        color: #8ef7c9;
+      }
+      .error {
+        color: #fca5a5;
+      }
+
+      /* Loading overlay */
+      .loading-overlay {
+        position: absolute;
+        inset: 0;
+        background: rgba(15, 23, 32, 0.85);
+        backdrop-filter: blur(8px);
+        border-radius: 24px;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 10;
+      }
+
+      .loading-overlay.visible {
+        display: flex;
+      }
+
+      .spinner {
+        width: 48px;
+        height: 48px;
+        border: 3px solid rgba(0, 230, 118, 0.2);
+        border-top-color: var(--green-neon);
+        border-radius: 50%;
+        animation: spin 0.9s linear infinite;
+      }
+
+      .loading-overlay p {
+        position: absolute;
+        bottom: 80px;
+        font-size: 14px;
+        color: var(--text-muted);
+        font-weight: 500;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      /* Footer info (10 MB) */
+      .card-footer {
+        width: 100%;
+        flex-basis: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding-top: 16px;
+        margin-top: 8px;
+        border-top: 1px solid var(--glass-border);
+      }
+
+      .card-footer .info-icon {
+        width: 18px;
+        height: 18px;
+        flex-shrink: 0;
+        opacity: 0.8;
+      }
+
+      .card-footer span {
+        font-size: 12px;
+        color: var(--text-muted);
+        font-weight: 500;
+      }
+
+      /* Rodapé da página (fora do card) */
+      .page-footer {
+        margin-top: auto;
+        padding: 48px 24px 40px;
+        text-align: center;
+        max-width: 560px;
+      }
+      .page-footer .copyright {
+        font-size: 13px;
+        color: #94a3b8;
+        margin-bottom: 8px;
+        font-weight: 500;
+      }
+      .page-footer .brand-signature {
+        font-size: 12px;
+        color: #94a3b8;
+        font-weight: 500;
+      }
+      .page-footer .brand-signature .jstec {
+        color: var(--green-neon);
+        font-weight: 700;
+        text-shadow: 0 0 12px rgba(0, 230, 118, 0.5);
+      }
+
+      @media (max-width: 768px) {
+        body {
+          padding-top: 16px;
+        }
+        .painel {
+          flex-direction: column;
+          padding: 20px;
+          border-radius: 20px;
+        }
+        .preview {
+          flex: 1 1 100%;
+          min-height: 260px;
+        }
+        .side {
+          flex: 1 1 100%;
+        }
+        .logo {
+          font-size: 2rem;
+          margin-top: 0;
+        }
+        .upload-btn {
+          max-width: 100%;
+        }
+        .progress-container {
+          max-width: 100%;
+        }
+        .page-footer {
+          padding: 40px 20px 32px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="bg-tech" aria-hidden="true">
+      <span class="bg-watermark">JSTec</span>
+      <span class="bg-watermark">JSTec</span>
+      <span class="bg-watermark">JSTec</span>
+      <div class="bg-icons">
+        <svg class="icon-1" viewBox="0 0 24 24" stroke="currentColor"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/></svg>
+        <svg class="icon-2" viewBox="0 0 24 24" stroke="currentColor"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        <svg class="icon-3" viewBox="0 0 24 24" stroke="currentColor"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+        <svg class="icon-4" viewBox="0 0 24 24" stroke="currentColor"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"/><line x1="9" y1="9" x2="15" y2="9"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="12" y2="17"/></svg>
+        <svg class="icon-5" viewBox="0 0 24 24" stroke="currentColor"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/></svg>
+        <svg class="icon-6" viewBox="0 0 24 24" stroke="currentColor"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+        <svg class="icon-7" viewBox="0 0 24 24" stroke="currentColor"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/></svg>
+        <svg class="icon-8" viewBox="0 0 24 24" stroke="currentColor"><rect x="2" y="6" width="20" height="12" rx="2"/><line x1="6" y1="10" x2="6.01" y2="10"/><line x1="10" y1="10" x2="10.01" y2="10"/><line x1="14" y1="10" x2="14.01" y2="10"/><line x1="18" y1="10" x2="18.01" y2="10"/></svg>
+      </div>
+    </div>
+    <div class="painel">
+      <!-- Loading overlay: só aparece durante o upload -->
+      <div class="loading-overlay" id="loadingOverlay" aria-hidden="true" role="status" aria-live="polite">
+        <div class="spinner" aria-hidden="true"></div>
+        <p id="loadingMessage">Processando imagem...</p>
+      </div>
+
+      <div class="preview" id="preview">
+        <img
+          id="currentImg"
+          src="https://res.cloudinary.com/dczj8gahc/image/upload/denouonoc/grade/NFT.jpg"
+          alt="Preview"
+          onerror="showPlaceholder()"
+        />
+        <div id="placeholder" class="placeholder" style="display: none">
+          <svg class="placeholder-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+            <polyline points="17 8 12 3 7 8" />
+            <line x1="12" y1="3" x2="12" y2="15" />
+          </svg>
+          <span>Arraste uma imagem aqui ou clique para selecionar</span>
+        </div>
+      </div>
+
+      <div class="side">
+        <div class="logo">JSTec</div>
+        <form id="uploadForm">
+          <input
+            type="file"
+            id="fileInput"
+            accept="image/*"
+            style="display: none"
+          />
+          <button type="button" class="upload-btn select-btn" id="selectBtn">
+            Selecionar imagem
+          </button>
+          <button type="submit" class="upload-btn">Enviar nova imagem</button>
+        </form>
+        <div class="progress-container" id="progressContainer">
+          <div class="progress-bar" id="progressBar"></div>
+        </div>
+        <div class="status" id="status"></div>
+      </div>
+
+      <div class="card-footer">
+        <svg class="info-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10" />
+          <line x1="12" y1="16" x2="12" y2="12" />
+          <line x1="12" y1="8" x2="12.01" y2="8" />
+        </svg>
+        <span>Máx. 10 MB. Recomendado: JPG para melhor desempenho.</span>
+      </div>
+    </div>
+
+    <footer class="page-footer">
+      <p class="copyright">© 2026 PanoBianco Capão Canoa. Todos os direitos reservados.</p>
+      <p class="brand-signature">Desenvolvido e Mantido por <span class="jstec">JSTec</span> — Soluções Tecnológicas</p>
+    </footer>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const CLOUD_NAME = "dczj8gahc";
+        const UPLOAD_PRESET = "painel_jstec";
+        const FOLDER = "denouonoc/grade";
+        const PUBLIC_ID = "NFT";
+
+        const fileInput = document.getElementById("fileInput");
+        const selectBtn = document.getElementById("selectBtn");
+        const form = document.getElementById("uploadForm");
+        const progressContainer = document.getElementById("progressContainer");
+        const progressBar = document.getElementById("progressBar");
+        const statusEl = document.getElementById("status");
+        const currentImg = document.getElementById("currentImg");
+        const placeholder = document.getElementById("placeholder");
+        const previewEl = document.getElementById("preview");
+        const loadingOverlay = document.getElementById("loadingOverlay");
+
+        function showPlaceholder() {
+          currentImg.style.display = "none";
+          placeholder.style.display = "flex";
+          previewEl.classList.remove("has-image");
+        }
+
+        function hidePlaceholder() {
+          placeholder.style.display = "none";
+          currentImg.style.display = "block";
+          previewEl.classList.add("has-image");
+        }
+
+        function setPreviewFromFile(file) {
+          if (!file || !file.type.startsWith("image/")) return;
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            currentImg.src = e.target.result;
+            hidePlaceholder();
+          };
+          reader.readAsDataURL(file);
+        }
+
+        selectBtn.addEventListener("click", () => {
+          fileInput.click();
+        });
+
+        previewEl.addEventListener("click", (e) => {
+          if (placeholder.style.display !== "none") {
+            fileInput.click();
+          }
+        });
+
+        fileInput.addEventListener("change", () => {
+          const file = fileInput.files[0];
+          if (file) setPreviewFromFile(file);
+        });
+
+        // Drag and drop
+        previewEl.addEventListener("dragover", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          previewEl.classList.add("drag-over");
+        });
+        previewEl.addEventListener("dragleave", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          previewEl.classList.remove("drag-over");
+        });
+        previewEl.addEventListener("drop", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          previewEl.classList.remove("drag-over");
+          const file = e.dataTransfer.files[0];
+          if (!file || !file.type.startsWith("image/")) return;
+          const dt = new DataTransfer();
+          dt.items.add(file);
+          fileInput.files = dt.files;
+          setPreviewFromFile(file);
+        });
+
+        const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
+
+        form.addEventListener("submit", (e) => {
+          e.preventDefault();
+          const file = fileInput.files[0];
+          if (!file) {
+            statusEl.textContent = "Selecione uma imagem antes de enviar.";
+            statusEl.className = "status error";
+            return;
+          }
+
+          if (file.size > MAX_FILE_SIZE) {
+            statusEl.textContent = "Arquivo muito grande (Máx: 10MB). Por favor, escolha uma imagem mais leve.";
+            statusEl.className = "status error";
+            return;
+          }
+
+          const formData = new FormData();
+          formData.append("image", file);
+
+          progressContainer.style.display = "block";
+          progressBar.style.width = "0";
+          statusEl.textContent = "";
+          statusEl.className = "status";
+          loadingOverlay.classList.add("visible");
+          loadingOverlay.setAttribute("aria-hidden", "false");
+
+          fetch("https://painel-jstec-backend-capao.onrender.com/upload", {
+            method: "POST",
+            body: formData,
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              progressBar.style.width = "100%";
+              if (data.url) {
+                currentImg.src = data.url + "?v=" + Date.now();
+                hidePlaceholder();
+                statusEl.textContent = "Imagem enviada com sucesso!";
+                statusEl.className = "status success";
+              } else {
+                statusEl.textContent = "Erro: " + (data.error || "Resposta inválida");
+                statusEl.className = "status error";
+              }
+            })
+            .catch(() => {
+              statusEl.textContent = "Erro de conexão com o servidor.";
+              statusEl.className = "status error";
+            })
+            .finally(() => {
+              loadingOverlay.classList.remove("visible");
+              loadingOverlay.setAttribute("aria-hidden", "true");
+            });
+        });
+
+        const testImg = new Image();
+        testImg.onload = () => hidePlaceholder();
+        testImg.onerror = () => showPlaceholder();
+        testImg.src = `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/${FOLDER}/${PUBLIC_ID}.jpg?cache=${Date.now()}`;
+      });
+    </script>
+  </body>
+</html>

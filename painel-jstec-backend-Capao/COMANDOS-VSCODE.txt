@@ -1,0 +1,37 @@
+========================================
+COMANDOS PARA EXECUTAR NO VS CODE TERMINAL
+========================================
+
+Copie e cole TODOS os comandos abaixo de uma vez:
+
+cd "C:\Users\Johns\OneDrive\Desktop\PAINEL-CAPÃO\painel-jstec-backend-Capao"
+git status
+git remote -v
+git push origin master
+
+========================================
+INSTRUÇÕES:
+========================================
+
+1. Abra o VS Code
+2. Abra a pasta: painel-jstec-backend-Capao
+3. Abra o terminal integrado (Ctrl + ` ou Terminal > New Terminal)
+4. Copie TODOS os comandos acima e cole no terminal
+5. Se pedir credenciais:
+   - Username: JSTec1
+   - Password: Cole seu token do GitHub (não sua senha!)
+
+========================================
+SE DER ERRO DE AUTENTICAÇÃO:
+========================================
+
+Execute estes comandos antes do push:
+
+git config --global credential.helper manager
+git push origin master
+
+Quando pedir credenciais, use:
+- Username: JSTec1  
+- Password: Seu token do GitHub
+
+========================================
